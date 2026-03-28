@@ -51,6 +51,18 @@
 
 ## 🔌 接線說明
 
+### 硬體架構
+
+| 元件 | 介面 |
+|------|------|
+| RC522 | SPI1 |
+| LCD | I2C1 |
+| Keypad | GPIO |
+| HC-05 | USART2 |
+| LED | GPIO |
+
+---
+
 ### RFID（RC522）
 
 | RC522 | STM32 |
@@ -104,7 +116,7 @@ typedef enum
     SYS_STATE_DENIED,
     SYS_STATE_LOCKOUT
 } SystemState_t;
-
+```
 ---
 
 ## 🔄 狀態流程
@@ -123,12 +135,12 @@ LOCKOUT → (30秒) → IDLE
 
 ## 🔐 安全機制
 
-❗ 錯誤次數累計（MAX_FAILED_COUNT）
-🔒 連續錯誤進入 Lockout（30 秒）
-🚫 RFID 重複觸發防護 / Keypad debounce
-🔑 PIN Mask（* 顯示）
-⌫ 支援刪除輸入（*）
-🔁 自動上鎖（5 秒）
+- ❗ 錯誤次數累計（MAX_FAILED_COUNT）
+- 🔒 連續錯誤進入 Lockout（30 秒）
+- 🚫 RFID 重複觸發防護 / Keypad debounce
+- 🔑 PIN Mask（* 顯示）
+- ⌫ 支援刪除輸入（*）
+- 🔁 自動上鎖（5 秒）
 
 ---
 
