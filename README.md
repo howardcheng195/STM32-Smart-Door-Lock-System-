@@ -1,5 +1,11 @@
 # 🔐 STM32 智慧門鎖系統 (Smart Door Lock System)
-本專案使用 STM32F407 開發板實作一套智慧門鎖系統，整合 RFID、Keypad、LCD 顯示與藍牙通訊，並透過狀態機（State Machine）設計，實現多模組協同運作與安全機制。
+本專案使用 STM32F407 開發一套智慧門鎖系統，整體採用 state machine 設計，支援 RFID 與 keypad PIN 雙驗證機制。
+
+系統包含 RC522（SPI）、LCD（I2C）、Bluetooth（UART）等多種通訊介面，並透過 HAL_GetTick 實作非阻塞時間控制。
+
+同時設計錯誤次數限制與 lockout 機制，並透過藍芽即時回傳系統狀態（如解鎖、上鎖、錯誤事件）至手機端。
+
+在軟體架構上，我將各功能模組化（auth、keypad、rfid、bluetooth），讓系統具備良好的擴充性與可維護性。
 
 ---
 
