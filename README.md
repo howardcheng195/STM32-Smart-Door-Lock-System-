@@ -127,8 +127,8 @@ IDLE\
  ├── 錯誤 → DENIED\
  └── 錯誤達上限 → LOCKOUT
 
-UNLOCKED → (5秒) → IDLE
-DENIED → (2秒) → IDLE
+UNLOCKED → (5秒) → IDLE\
+DENIED → (2秒) → IDLE\
 LOCKOUT → (30秒) → IDLE
 
 ---
