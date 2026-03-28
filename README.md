@@ -146,11 +146,11 @@ LOCKOUT → (30秒) → IDLE
 
 ## 📁 專案結構
 
-/Core
- /├── main.c          # 狀態機 + 系統整合
- ├── rc522.c/h       # RFID 模組
- ├── keypad.c/h      # Keypad 掃描
- ├── auth.c/h        # PIN 驗證
- ├── lcd_i2c.c/h     # LCD 顯示
+/Core\
+ ├── main.c          # 狀態機 + 系統整合\
+ ├── rc522.c/h       # RFID 模組\
+ ├── keypad.c/h      # Keypad 掃描\
+ ├── auth.c/h        # PIN 驗證\
+ ├── lcd_i2c.c/h     # LCD 顯示\
  ├── bluetooth.c/h   # UART 通訊
 
