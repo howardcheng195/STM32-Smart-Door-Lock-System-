@@ -146,7 +146,7 @@ LOCKOUT → (30秒) → IDLE
 
 ## 📁 專案結構
 
-/Core\
+Core\
  ├── main.c          # 狀態機 + 系統整合\
  ├── rc522.c/h       # RFID 模組\
  ├── keypad.c/h      # Keypad 掃描\
