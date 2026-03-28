@@ -121,10 +121,10 @@ typedef enum
 
 ## 🔄 狀態流程
 
-IDLE
- ├── RFID 正確 → UNLOCKED
- ├── PIN 正確 → UNLOCKED
- ├── 錯誤 → DENIED
+IDLE\
+ ├── RFID 正確 → UNLOCKED\
+ ├── PIN 正確 → UNLOCKED\
+ ├── 錯誤 → DENIED\
  └── 錯誤達上限 → LOCKOUT
 
 UNLOCKED → (5秒) → IDLE
