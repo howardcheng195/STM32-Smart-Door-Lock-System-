@@ -105,3 +105,40 @@ typedef enum
     SYS_STATE_LOCKOUT
 } SystemState_t;
 
+---
+
+## 🔄 狀態流程
+
+IDLE
+ ├── RFID 正確 → UNLOCKED
+ ├── PIN 正確 → UNLOCKED
+ ├── 錯誤 → DENIED
+ └── 錯誤達上限 → LOCKOUT
+
+UNLOCKED → (5秒) → IDLE
+DENIED → (2秒) → IDLE
+LOCKOUT → (30秒) → IDLE
+
+---
+
+## 🔐 安全機制
+
+❗ 錯誤次數累計（MAX_FAILED_COUNT）
+🔒 連續錯誤進入 Lockout（30 秒）
+🚫 RFID 重複觸發防護 / Keypad debounce
+🔑 PIN Mask（* 顯示）
+⌫ 支援刪除輸入（*）
+🔁 自動上鎖（5 秒）
+
+---
+
+## 📁 專案結構
+
+/Core
+ ├── main.c          # 狀態機 + 系統整合
+ ├── rc522.c/h       # RFID 模組
+ ├── keypad.c/h      # Keypad 掃描
+ ├── auth.c/h        # PIN 驗證
+ ├── lcd_i2c.c/h     # LCD 顯示
+ ├── bluetooth.c/h   # UART 通訊
+
