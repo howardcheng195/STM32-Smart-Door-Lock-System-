@@ -78,7 +78,7 @@
 | MOSI | PA7 |
 | MISO | PA6 |
 | RST | PB0 |
-| VCC | 3.3V |
+| 3.3V | 3.3V |
 | GND | GND |
 
 ---
