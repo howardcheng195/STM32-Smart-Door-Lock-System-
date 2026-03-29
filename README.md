@@ -160,3 +160,8 @@ Core\
  ├── lcd_i2c.c/h     # LCD 顯示\
  ├── bluetooth.c/h   # UART 通訊
 
+---
+
+## 📁 實作影片
+
+- 影片網址 : https://drive.google.com/file/d/1FF6nW6pfgetu8viEPoBJ8A5VlhyVrLDl/view?usp=drive_link
