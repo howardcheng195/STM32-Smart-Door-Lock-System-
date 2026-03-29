@@ -164,4 +164,4 @@ Core\
 
 ## 📁 實作影片
 
-- 影片網址 : https://drive.google.com/file/d/1FF6nW6pfgetu8viEPoBJ8A5VlhyVrLDl/view?usp=drive_link
+- 影片網址 : [https://drive.google.com/file/d/1FF6nW6pfgetu8viEPoBJ8A5VlhyVrLDl/view?usp=drive_link](https://drive.google.com/file/d/1tSGuTs4AboM_OgI44C08DSY0pbowwype/view?usp=drive_link)
