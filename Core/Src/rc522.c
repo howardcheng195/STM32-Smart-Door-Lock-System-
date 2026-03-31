@@ -67,7 +67,7 @@ static void RC522_ClearBitMask(uint8_t reg, uint8_t mask)
 static void RC522_AntennaOn(void)
 {
     uint8_t temp = RC522_ReadRegister(TxControlReg);
-    if (!(temp & 0x03))
+    if ((temp & 0x03)!=0x03)
     {
         RC522_SetBitMask(TxControlReg, 0x03);
     }
