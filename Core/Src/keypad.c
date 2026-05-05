@@ -70,9 +70,9 @@ char Keypad_GetKey(void)
     // 多鍵同時按下，忽略，避免 ghosting
     if (key_count > 1) {
         return 0;
-    }
+    }	// 可以結合成 (key_count != 1)
 
-    // debounce：等一下再確認一次
+    // debounce
     HAL_Delay(20);
 
     // 簡單確認是否仍有按鍵
