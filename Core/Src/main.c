@@ -274,6 +274,7 @@ void Enter_Lockout_State(void)
     system_state = SYS_STATE_LOCKOUT;
     lockout_start_time = HAL_GetTick();
 	// LOCKOUT 跳回 IDLE 已經有設
+	// 也可以留這邊(多一層保障)
     // last_lockout_remain = 0xFFFFFFFF;
 	// 馬上顯示 30
     // LCD_ShowLockout(LOCKOUT_DURATION_MS / 1000);
