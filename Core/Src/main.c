@@ -438,7 +438,7 @@ int main(void)
             }
             else
             {
-                uint32_t remain_sec = (LOCKOUT_DURATION_MS - elapsed) / 1000 + 1;
+                uint32_t remain_sec = (LOCKOUT_DURATION_MS - elapsed + 999) / 1000;
 
                 if (remain_sec != last_lockout_remain)
                 {
