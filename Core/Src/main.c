@@ -409,7 +409,10 @@ int main(void)
         if (system_state == SYS_STATE_IDLE)
         {
             Process_RFID(tagType, uid);
-            Process_Keypad();
+            // 避免同事改到 state
+            if (system_state == SYS_STATE_IDLE){
+            	Process_Keypad();
+            }
         }
         else if (system_state == SYS_STATE_UNLOCKED)
         {
