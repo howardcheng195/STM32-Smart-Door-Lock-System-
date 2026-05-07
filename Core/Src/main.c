@@ -274,7 +274,8 @@ void Enter_Lockout_State(void)
     system_state = SYS_STATE_LOCKOUT;
     lockout_start_time = HAL_GetTick();
     last_lockout_remain = 0xFFFFFFFF;
-    LCD_ShowLockout(LOCKOUT_DURATION_MS / 1000);
+	// 馬上顯示 30
+    // LCD_ShowLockout(LOCKOUT_DURATION_MS / 1000);
 }
 
 void Process_RFID(uint8_t *tagType, uint8_t *uid)
