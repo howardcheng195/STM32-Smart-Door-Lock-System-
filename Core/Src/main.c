@@ -273,7 +273,8 @@ void Enter_Lockout_State(void)
     BT_Send("EVENT:LOCKOUT\r\n");
     system_state = SYS_STATE_LOCKOUT;
     lockout_start_time = HAL_GetTick();
-    last_lockout_remain = 0xFFFFFFFF;
+	// LOCKOUT 跳回 IDLE 已經有設
+    // last_lockout_remain = 0xFFFFFFFF;
 	// 馬上顯示 30
     // LCD_ShowLockout(LOCKOUT_DURATION_MS / 1000);
 }
