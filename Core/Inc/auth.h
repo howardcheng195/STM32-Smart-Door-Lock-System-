@@ -18,6 +18,7 @@ void Auth_Clear(void);
 bool Auth_AddChar(char key);
 bool Auth_IsClearKey(char key);
 bool Auth_IsEnterKey(char key);
+bool Auth_ConstantTimeCompare(const char *a, const char *b, uint8_t len);
 bool Auth_CheckPin(void);
 const char* Auth_GetMaskedPin(void);
 bool Auth_Backspace(void);
