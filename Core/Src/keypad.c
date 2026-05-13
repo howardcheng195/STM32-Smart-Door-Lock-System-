@@ -62,15 +62,7 @@ char Keypad_GetKey(void)
         HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
     }
 
-    // 沒有按鍵
-    if (key_count == 0) {
-        return 0;
-    }
 
-    // 多鍵同時按下，忽略，避免 ghosting
-    if (key_count > 1) {
-        return 0;
-    }	// 可以結合成 (key_count != 1)
 
     // debounce
     HAL_Delay(20);
