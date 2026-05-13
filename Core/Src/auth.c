@@ -56,9 +56,22 @@ bool Auth_IsEnterKey(char key)
     return (key == '#');
 }
 
+// 使用 constant time compare
+// 避免 timing attack
+bool Auth_ConstantTimeCompare(const char *a, const char *b, uint8_t len){
+	uint8_t diff = 0;
+	for(uint8_t i = 0; i < len; i++){
+		diff |= (uint8_t)(a[i] ^ b[i]);
+	}
+	return (diff == 0);
+}
+
 bool Auth_CheckPin(void)
 {
-    return (strcmp(pin_buffer, correct_pin) == 0);
+    if(pin_len != 4){
+    	return false;
+    }
+    return Auth_ConstantTimeCompare(pin_buffer, correct_pin, MAX_PIN_LEN);
 }
 
 const char* Auth_GetMaskedPin(void)
