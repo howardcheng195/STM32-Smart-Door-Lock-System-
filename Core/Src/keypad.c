@@ -103,7 +103,20 @@ char Keypad_GetKey(void)
     int count2 = 0;
     char key2 = Keypad_ScanOnce(&count2);
 
-    if (count2 != 1 || key1 != key2) {
+    if (count2 == 0) {
+        last_key = 0;
+        key_locked = 0;
+        return 0;
+    }
+
+    // debounce 後變成多鍵，鎖住直到全部放開
+    if (count2 > 1) {
+        key_locked = 1;
+        return 0;
+    }
+
+    // debounce 後變成另一顆鍵，忽略
+    if (key1 != key2) {
         return 0;
     }
 
