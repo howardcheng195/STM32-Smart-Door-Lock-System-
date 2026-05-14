@@ -26,6 +26,8 @@ static uint16_t col_pins[4] = {
 
 // 紀錄上一個按鈕
 static char last_key = 0;
+// 避免先按下一個按鈕不放開，又按下一個
+static uint8_t key_locked = 0;
 
 void Keypad_Init(void)
 {
@@ -42,7 +44,7 @@ static void Keypad_AllRowsHigh(void)
     }
 }
 
-static char Keypad_ScanOnce(void)
+static char Keypad_ScanOnce(int *key_count_out)
 {
     char detected_key = 0;
     int key_count = 0;
@@ -50,9 +52,7 @@ static char Keypad_ScanOnce(void)
     for (int row = 0; row < 4; row++) {
 
         Keypad_AllRowsHigh();
-
         HAL_GPIO_WritePin(row_ports[row], row_pins[row], GPIO_PIN_RESET);
-
         HAL_Delay(1);
 
         for (int col = 0; col < 4; col++) {
@@ -64,7 +64,10 @@ static char Keypad_ScanOnce(void)
     }
 
     Keypad_AllRowsHigh();
-    // 多鍵同時按下，忽略，避免 ghosting
+
+    *key_count_out = key_count;
+
+    // 一次只能按一個，避免ghosting
     if (key_count != 1) {
         return 0;
     }
@@ -74,30 +77,40 @@ static char Keypad_ScanOnce(void)
 
 char Keypad_GetKey(void)
 {
-    char key1 = Keypad_ScanOnce();
+    int count1 = 0;
+    char key1 = Keypad_ScanOnce(&count1);
 
-    // 沒按鍵，代表已放開
-    if (key1 == 0) {
+    // 沒有按鍵，解除鎖定
+    if (count1 == 0) {
         last_key = 0;
+        key_locked = 0;
         return 0;
     }
 
-    // debounce
+    // 多鍵狀態，鎖住直到全部放開
+    if (count1 > 1) {
+        key_locked = 1;
+        return 0;
+    }
+
+    // 如果之前進入多鍵狀態，必須等全部放開才接受新鍵
+    if (key_locked) {
+        return 0;
+    }
+
     HAL_Delay(20);
 
-    char key2 = Keypad_ScanOnce();
+    int count2 = 0;
+    char key2 = Keypad_ScanOnce(&count2);
 
-    // debounce 後不是同一顆鍵，忽略
-    if (key1 != key2) {
+    if (count2 != 1 || key1 != key2) {
         return 0;
     }
 
-    // 如果還是上一顆按住，不重複回傳
     if (key1 == last_key) {
         return 0;
     }
 
-    // 新按鍵
     last_key = key1;
     return key1;
 }
