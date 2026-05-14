@@ -24,6 +24,9 @@ static uint16_t col_pins[4] = {
     GPIO_PIN_3, GPIO_PIN_2, GPIO_PIN_1, GPIO_PIN_0
 };
 
+// 紀錄上一個按鈕
+static char last_key = 0;
+
 void Keypad_Init(void)
 {
 	// row 拉高
@@ -32,19 +35,22 @@ void Keypad_Init(void)
     }
 }
 
-char Keypad_GetKey(void)
+static void Keypad_AllRowsHigh(void)
+{
+    for (int i = 0; i < 4; i++) {
+        HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
+    }
+}
+
+static char Keypad_ScanOnce(void)
 {
     char detected_key = 0;
     int key_count = 0;
 
     for (int row = 0; row < 4; row++) {
 
-        // 全部 row 拉高
-        for (int i = 0; i < 4; i++) {
-            HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
-        }
+        Keypad_AllRowsHigh();
 
-        // 目前 row 拉低
         HAL_GPIO_WritePin(row_ports[row], row_pins[row], GPIO_PIN_RESET);
 
         HAL_Delay(1);
@@ -57,41 +63,41 @@ char Keypad_GetKey(void)
         }
     }
 
-    // 掃描完 row 全部拉高
-    for (int i = 0; i < 4; i++) {
-        HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
+    Keypad_AllRowsHigh();
+    // 多鍵同時按下，忽略，避免 ghosting
+    if (key_count != 1) {
+        return 0;
     }
 
+    return detected_key;
+}
 
+char Keypad_GetKey(void)
+{
+    char key1 = Keypad_ScanOnce();
+
+    // 沒按鍵，代表已放開
+    if (key1 == 0) {
+        last_key = 0;
+        return 0;
+    }
 
     // debounce
     HAL_Delay(20);
 
-    // 簡單確認是否仍有按鍵
-    int still_pressed = 0;
+    char key2 = Keypad_ScanOnce();
 
-    for (int row = 0; row < 4; row++) {
-        for (int i = 0; i < 4; i++) {
-            HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
-        }
-
-        HAL_GPIO_WritePin(row_ports[row], row_pins[row], GPIO_PIN_RESET);
-        HAL_Delay(1);
-
-        for (int col = 0; col < 4; col++) {
-            if (HAL_GPIO_ReadPin(col_ports[col], col_pins[col]) == GPIO_PIN_RESET) {
-                still_pressed++;
-            }
-        }
+    // debounce 後不是同一顆鍵，忽略
+    if (key1 != key2) {
+        return 0;
     }
 
-    for (int i = 0; i < 4; i++) {
-        HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
+    // 如果還是上一顆按住，不重複回傳
+    if (key1 == last_key) {
+        return 0;
     }
 
-    if (still_pressed == 1) {
-        return detected_key;
-    }
-
-    return 0;
+    // 新按鍵
+    last_key = key1;
+    return key1;
 }
