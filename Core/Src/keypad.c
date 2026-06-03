@@ -32,19 +32,22 @@ void Keypad_Init(void)
     }
 }
 
-char Keypad_GetKey(void)
+static void Keypad_AllRowsHigh(void)
+{
+    for (int i = 0; i < 4; i++) {
+        HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
+    }
+}
+
+static char Keypad_ScanOnce(void)
 {
     char detected_key = 0;
     int key_count = 0;
 
     for (int row = 0; row < 4; row++) {
 
-        // 全部 row 拉高
-        for (int i = 0; i < 4; i++) {
-            HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
-        }
+        Keypad_AllRowsHigh();
 
-        // 目前 row 拉低
         HAL_GPIO_WritePin(row_ports[row], row_pins[row], GPIO_PIN_RESET);
 
         HAL_Delay(1);
@@ -57,41 +60,51 @@ char Keypad_GetKey(void)
         }
     }
 
-    // 掃描完 row 全部拉高
-    for (int i = 0; i < 4; i++) {
-        HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
+    Keypad_AllRowsHigh();
+    // 多鍵同時按下，忽略，避免 ghosting
+    if (key_count != 1) {
+        return 0;
     }
 
-
-
-    // debounce
-    HAL_Delay(20);
-
-    // 簡單確認是否仍有按鍵
-    int still_pressed = 0;
-
-    for (int row = 0; row < 4; row++) {
-        for (int i = 0; i < 4; i++) {
-            HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
-        }
-
-        HAL_GPIO_WritePin(row_ports[row], row_pins[row], GPIO_PIN_RESET);
-        HAL_Delay(1);
-
-        for (int col = 0; col < 4; col++) {
-            if (HAL_GPIO_ReadPin(col_ports[col], col_pins[col]) == GPIO_PIN_RESET) {
-                still_pressed++;
-            }
-        }
-    }
-
-    for (int i = 0; i < 4; i++) {
-        HAL_GPIO_WritePin(row_ports[i], row_pins[i], GPIO_PIN_SET);
-    }
-
-    if (still_pressed == 1) {
-        return detected_key;
-    }
-
-    return 0;
+    return detected_key;
 }
+
+static char last_key = 0;
+static char debounce_key = 0;
+static uint32_t debounce_time = 0;
+
+// non-blocking
+char Keypad_GetKey(void)
+{
+    char key = Keypad_ScanOnce();
+
+    // 沒按鍵，代表已放開
+    if (key == 0) {
+        last_key = 0;
+        debounce_key = 0;
+        debounce_time = 0;
+        return 0;
+    }
+
+    // 按鍵剛變化，開始 debounce 計時
+    if (key != debounce_key) {
+        debounce_key = key;
+        debounce_time = HAL_GetTick();
+        return 0;
+    }
+
+    // 還沒穩定 20ms，不輸出
+    if (HAL_GetTick() - debounce_time < 20) {
+        return 0;
+    }
+
+    // 如果還是上一顆按住，不重複回傳
+    if (key == last_key) {
+        return 0;
+    }
+
+    // 新按鍵
+    last_key = key;
+    return key;
+}
+
