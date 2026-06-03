@@ -280,10 +280,13 @@ void Enter_Lockout_State(void)
     // LCD_ShowLockout(LOCKOUT_DURATION_MS / 1000);
 }
 
+#define CARD_REMOVE_THRESHOLD 3
+uint8_t no_card_count = 0;
 void Process_RFID(uint8_t *tagType, uint8_t *uid)
 {
     if (RC522_Request(PICC_REQIDL, tagType) == MI_OK)
     {
+		no_card_count = 0;
         if (RC522_Anticoll(uid) == MI_OK)
         {
             if (!has_last_uid || !UID_IsSame(uid, last_uid))
@@ -326,7 +329,15 @@ void Process_RFID(uint8_t *tagType, uint8_t *uid)
     }
     else
     {
-        has_last_uid = 0;
+        no_card_count++;
+        // 不是一次沒讀到就當卡移開
+        // 而是連續 THRESHOLD 次數，才當作拿開
+        if (no_card_count >= CARD_REMOVE_THRESHOLD)
+        {
+            has_last_uid = 0;
+            // check
+            HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+        }
     }
 }
 
@@ -420,7 +431,6 @@ int main(void)
             {
             	BT_Send("EVENT:LOCKED\r\n");
                 Enter_Idle_State();
-                has_last_uid = 0;
             }
         }
         else if (system_state == SYS_STATE_DENIED)
@@ -428,7 +438,6 @@ int main(void)
             if (now - denied_start_time >= DENIED_DURATION_MS)
             {
                 Enter_Idle_State();
-                has_last_uid = 0;
             }
         }
         else if (system_state == SYS_STATE_LOCKOUT)
@@ -440,7 +449,6 @@ int main(void)
                 failed_count = 0;
                 last_lockout_remain = 0xFFFFFFFF;
                 Enter_Idle_State();
-                has_last_uid = 0;
             }
             else
             {
